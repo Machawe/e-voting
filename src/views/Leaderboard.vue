@@ -47,6 +47,7 @@
 </template>
 <script>
 import axios from "axios";
+import {API} from "@/client.js";
 import { mdbNavbar, mdbNavbarNav, mdbNavItem, mdbBtn, mdbIcon, mdbRow, mdbCol, mdbContainer, mdbBadge, mdbAvatar } from "mdbvue";
 // import Navbar from "@/components/InappNevBar"
 export default {
@@ -224,6 +225,22 @@ export default {
 		},
 	},
 	mounted() {
+
+		API.get('election').then((response)=>{
+				this.election = response.data;
+		})
+		
+		API.get('positions').then((response)=>{
+				this.election.positions = response.data;
+		})
+
+		API.get('positions').then((response)=>{
+				this.election.nomenees = response.data;
+		})
+
+
+
+
 		axios.get(`https://randomuser.me/api/?results=${this.election.nomenees.length}&inc=picture`).then((response) => {
 			for (let i = 0; i < this.election.nomenees.length; i++) {
 				console.log(response.data.results[i].picture.large);

@@ -15,7 +15,7 @@
 			</mdb-navbar>
 		</mdb-container>
 
-		<h1 class="mt-4" >Register</h1>
+		<h1 class="mt-4">Register</h1>
 		<mdb-stepper class="text-left mb-3" buttons :steps="registrationStepper" :options="options" @submit="register">
 			<template #1 style="min-height:55vh;">
 				<p class="blue-grey lighten-5 h4  text-center mt-4 font-weight-bold">Personal Details</p>
@@ -52,7 +52,7 @@
 								</mdb-col>
 								<hr class="w-100" />
 								<mdb-col class="my-5 h5">
-									<mdb-input type="checkbox"  id="opentonomination" name="opentonomination" v-model="student.nominatable" label="I would like to run for office" />
+									<mdb-input type="checkbox" id="opentonomination" name="opentonomination" v-model="student.nominatable" label="I would like to run for office" />
 								</mdb-col>
 							</mdb-row>
 						</mdb-container>
@@ -106,7 +106,7 @@
 </template>
 
 <script>
-import axios from "axios"
+import {API} from "@/client.js";
 import { mdbStepper, mdbInput, mdbContainer, mdbSelect, mdbRow, mdbCol, mdbIcon, mdbNavbar, mdbNavbarNav, mdbNavbarToggler, mdbNavbarBrand, mdbNavItem } from "mdbvue";
 export default {
 	name: "register",
@@ -212,13 +212,12 @@ export default {
 	methods: {
 		register() {
 			console.log("register");
-
-
-			// axios.post("192.168.1.108:5000/api/students",this.student )
-			axios.get("192.168.1.108:5000/api/election").then((res)=>{
+			API.post("students", this.student).then((res) => {
 				console.log(res);
-			})
-			// axios.post("localhost:5000",JSON.stringify(this.student))
+				this.$router.push({ name: "leaderboard" });
+			});
+
+
 		},
 		getSelectCourse(value, text) {
 			this.student.programme = value;
