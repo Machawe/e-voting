@@ -133,7 +133,7 @@ export default {
 				surname: "",
 				programme: "",
 				campus: "",
-				cell: "",
+				phone: "",
 				email: "",
 				password: "",
 				nominatable: false,
@@ -212,7 +212,7 @@ export default {
 	methods: {
 		register() {
 			console.log("register");
-			axios.get("localhost:5000/t",JSON.stringify(this.student))
+			axios.post("localhost:5000/register",JSON.stringify(this.student))
 			// axios.post("localhost:5000",JSON.stringify(this.student))
 		},
 		getSelectCourse(value, text) {
