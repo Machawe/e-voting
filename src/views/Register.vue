@@ -212,7 +212,12 @@ export default {
 	methods: {
 		register() {
 			console.log("register");
-			axios.post("localhost:5000/register",JSON.stringify(this.student))
+
+
+			// axios.post("192.168.1.108:5000/api/students",this.student )
+			axios.get("192.168.1.108:5000/api/election").then((res)=>{
+				console.log(res);
+			})
 			// axios.post("localhost:5000",JSON.stringify(this.student))
 		},
 		getSelectCourse(value, text) {
