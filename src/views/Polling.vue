@@ -40,7 +40,7 @@
 						</mdb-row>
 						<mdb-row>
 							<mdb-col col="12">
-								<mdb-avatar tag="img" v-if="election.nomenees[index2].picture.length != 0" :src="election.nomenees[index2].picture" circle class="z-depth-1" alt="Sample avatar" />
+								<mdb-avatar tag="img" v-if="nomenee.picture.length != 0" :src="nomenee.picture" circle class="z-depth-1" alt="Sample avatar" />
 								<mdb-icon size="5x" v-else icon="user-circle" />
 							</mdb-col>
 						</mdb-row>
@@ -65,7 +65,7 @@
 	</mdb-container>
 </template>
 <script>
-import axios from "axios";
+import { elections } from "@/plugins/firebase.js";
 import { mdbNavbar, mdbNavbarNav, mdbAvatar, mdbNavItem, mdbBtn, mdbIcon, mdbRow, mdbCol, mdbContainer, mdbBadge, mdbInput } from "mdbvue";
 // import Navbar from "@/components/InappNevBar"
 export default {
@@ -86,6 +86,8 @@ export default {
 	},
 	data() {
 		return {
+			loading: false,
+			Voted: false,
 			election: {
 				startdate: "",
 				starttime: "",
@@ -233,6 +235,7 @@ export default {
 					},
 				],
 			},
+			student:{},
 			vote: [],
 		};
 	},
@@ -268,12 +271,42 @@ export default {
 		},
 	},
 	mounted() {
-		axios.get(`https://randomuser.me/api/?results=${this.election.nomenees.length}&inc=picture`).then((response) => {
-			for (let i = 0; i < this.election.nomenees.length; i++) {
-				console.log(response.data.results[i].picture.large);
-				this.election.nomenees[i].picture = response.data.results[i].picture.large;
-			}
-		});
+		elections
+			.doc("2020-2021")
+			.get()
+			.then((doc) => {
+				if (doc.exists) {
+					this.election = doc.data();
+					this.loading = false;
+				} else {
+					this.loading = false;
+					this.Voted = true;
+				}
+			})
+			.catch((error) => {
+				this.$notify.error({ message: error.message, position: "top right", timeOut: 5000 });
+
+				this.loading = false;
+				this.Voted = true;
+			});
+		// API.get('election').then((response)=>{
+		// 		this.election = response.data;
+		// })
+
+		// API.get('positions').then((response)=>{
+		// 		this.election.positions = response.data;
+		// })
+
+		// API.get('positions').then((response)=>{
+		// 		this.election.nomenees = response.data;
+		// })
+
+		// axios.get(`https://randomuser.me/api/?results=${this.election.nomenees.length}&inc=picture`).then((response) => {
+		// 	for (let i = 0; i < this.election.nomenees.length; i++) {
+		// 		console.log(response.data.results[i].picture.large);
+		// 		this.election.nomenees[i].picture = response.data.results[i].picture.large;
+		// 	}
+		// });
 	},
 };
 </script>

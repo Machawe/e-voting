@@ -1,10 +1,23 @@
 <template>
 	<mdb-container class="white border">
-		<mdb-stepper buttons :steps="registrationStepper" @submit="submit">
+		<div v-if="loading" class=" d-flex justify-content-center   mx-0 px-0 p-0 m-0" style="height:80vh;width:100%">
+			<mdb-spinner class="align-middle align-self-center"  big crazy />
+		</div>
+		<mdb-stepper v-else buttons :steps="registrationStepper" @submit="submit">
 			<template #1>
 				<h3 class="font-weight-bold pl-0 my-4">
 					<strong>Election Dates</strong>
 				</h3>
+				<hr />
+				<!-- <p class="blue-grey lighten-5 text-center h6 "> </p> -->
+				<mdb-row class="justify-content-center indigo">
+					<mdb-col md="5" lg="5" class="d-none pt-2 white-text font-weight-bold d-md-block mt-4 text-right text-uppercase ">
+						Academic Year
+					</mdb-col>
+					<mdb-col md="7" lg="5">
+						<mdb-select class="white" outline v-model="acardemic_years" @getValue="yearSelected" placeholder="Choose Election Arcademic year" />
+					</mdb-col>
+				</mdb-row>
 				<p class="blue-grey lighten-5 text-center h6 ">Starting Time</p>
 				<mdb-row>
 					<mdb-col>
@@ -48,7 +61,7 @@
 							<mdb-col> <mdb-btn outline="primary" class="mt-4" size="md" rounded icon="plus" @click="AddNomenee(id[index1], position, index1)"></mdb-btn></mdb-col>
 						</mdb-row>
 						<mdb-row>
-							<mdb-col col="11" md="4" lg="3" class="my-4"  v-for="(nomenee, index2) in getNomenees(position)" :key="index2">
+							<mdb-col col="11" md="4" lg="3" class="my-4" v-for="(nomenee, index2) in getNomenees(position)" :key="index2">
 								<span class=" card hoverable">
 									<mdb-icon size="3x" icon="user-circle" />
 									<hr />
@@ -69,11 +82,13 @@
 	</mdb-container>
 </template>
 <script>
-import { mdbStepper, mdbInput, mdbContainer, mdbDatePicker2, mdbTimePicker2, mdbRow, mdbCol, mdbTableEditable, mdbCard, mdbCardBody, mdbBtn, mdbIcon } from "mdbvue";
-
+import axios from "axios";
+import { mdbStepper, mdbInput, mdbContainer,mdbSpinner , mdbSelect, mdbDatePicker2, mdbTimePicker2, mdbRow, mdbCol, mdbTableEditable, mdbCard, mdbCardBody, mdbBtn, mdbIcon } from "mdbvue";
+import { elections } from "@/plugins/firebase.js";
 export default {
 	components: {
 		mdbStepper,
+		mdbSelect,
 		mdbInput,
 		mdbContainer,
 		mdbDatePicker2,
@@ -84,10 +99,23 @@ export default {
 		mdbCard,
 		mdbCardBody,
 		mdbBtn,
+		mdbSpinner ,
 		mdbIcon,
 	},
 	data() {
 		return {
+			loading: false,
+			acardemic_years: [
+				{ text: "2018/2019", value: "2018-2019" },
+				{ text: "2019/2020", value: "2019-2020" },
+				{ text: "2020/2021", value: "2020-2021" },
+				{ text: "2021/2022", value: "2021-2022" },
+				{ text: "2023/2024", value: "2023-2024" },
+				{ text: "2024/2025", value: "2024-2025" },
+				{ text: "2025/2026", value: "2025-2026" },
+				{ text: "2026/2027", value: "2026-2027" },
+				{ text: "2027/2028", value: "2027-2028" },
+			],
 			id: [],
 			studentID: "",
 			registrationStep: 2,
@@ -98,11 +126,11 @@ export default {
 				{ icon: "check", name: "Finish" },
 			],
 			election: {
+				acardemic_year: "2020-2021",
 				startdate: "",
 				starttime: "",
 				enddate: "",
 				endtime: "",
-				positions: [],
 			},
 			columns: [
 				{
@@ -144,6 +172,35 @@ export default {
 	methods: {
 		submit() {
 			console.log("submitted");
+			this.loading =true;
+			axios.get(`https://randomuser.me/api/?results=${this.nomenees.length}&inc=picture`).then((response) => {
+				for (let i = 0; i < this.nomenees.length; i++) {
+					console.log(response.data.results[i].picture.large);
+					this.nomenees[i].picture = response.data.results[i].picture.large;
+				}
+
+				elections
+					.doc(`${this.election.acardemic_year}`)
+					.set({
+						acardemic_year: this.election.acardemic_year,
+						startdate: this.election.startdate,
+						starttime: this.election.starttime,
+						enddate: this.election.enddate,
+						endtime: this.election.endtime,
+						positions: this.positions,
+						nomenees: this.nomenees,
+					})
+					.then(() => {
+						this.$notify.success({ message: `Election for the ${this.acardemic_year} academic year Ready`, position: "top right", timeOut: 5000 });
+						this.loading =false;
+						this.$router.push({ name: "leaderboard" });
+					})
+					.catch((err) => {
+						console.log(err);
+						this.loading =false;
+						this.$notify.error({ message: err.message, position: "top right", timeOut: 5000 });
+					});
+			});
 		},
 		AddNomenee(studentID, position, index) {
 			console.log(`${studentID} + ${position}`);
@@ -167,6 +224,9 @@ export default {
 					return false;
 				}
 			});
+		},
+		yearSelected(payload) {
+			console.log(payload);
 		},
 	},
 };

@@ -2,7 +2,7 @@
 	<div class="classic-form-page">
 		<mdb-navbar color="mdb-color" position="top" animation="5" dark>
 			<mdb-container fluid>
-				<mdbNavbarBrand href="#/"> <img src="@/assets/l.png" class="my-0 py-0" height="40" alt=""></mdbNavbarBrand>
+				<mdbNavbarBrand href="#/"> <img src="@/assets/l.png" class="my-0 py-0" height="40" alt=""/></mdbNavbarBrand>
 				<mdb-navbar-toggler>
 					<mdb-navbar-nav right>
 						<mdb-form-inline
@@ -22,12 +22,10 @@
 							<h1 class="h1-responsive font-weight-bold animated fadeInLeft">UNESWA SRC <span class="text-success"> e-VOTING</span></h1>
 							<hr class="hr-light animated fadeInLeft" />
 							<h6 class="mb-4 animated fadeInLeft">Due to the covid-19, the SRC elections could not be held physically. Please register and vote.</h6>
-							<mdb-btn outline="white animated fadeInLeft"  @click="$router.push({ name: 'results' })" color="white">Results</mdb-btn>
+							<mdb-btn outline="white animated fadeInLeft" @click="$router.push({ name: 'results' })" color="white">Results</mdb-btn>
 						</div>
 
 						<mdb-col md="6" xl="5" class="my-5  animated fadeInRight">
-			
-
 							<img src="@/assets/voting.svg" class="img-fluid" alt="Responsive image" />
 						</mdb-col>
 					</mdb-row>
@@ -80,7 +78,7 @@
 </template>
 
 <script>
-import axios from "axios"
+// import axios from "axios";
 import {
 	mdbContainer,
 	mdbRow,
@@ -131,17 +129,20 @@ export default {
 		};
 	},
 	methods: {
+		// ...mapActions({
+		// 	signin: "store/signInAction",
+		// }),
 		login() {
-			
-			axios.push('localhost:5000/login',{studen_id:this.student_id,password: this.password})
-
 			if (this.student_id == "admin" && this.password == "admin") {
 				this.$router.push("/admin");
 			} else {
-				this.$router.push({ name: "leaderboard" });
+				this.$store.dispatch('signInAction',{ email: this.student_id + "@student.uniswa.sz", password: this.password }).then(() => {
+					this.$router.push({ name: "leaderboard" });
+				}).catch((err)=>{
+						console.log(err)
+				})
 			}
 		},
-		
 	},
 };
 </script>

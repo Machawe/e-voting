@@ -15,7 +15,7 @@
 			</mdb-navbar>
 		</mdb-container>
 
-		<h1 class="mt-4" >Register</h1>
+		<h1 class="mt-4">Register</h1>
 		<mdb-stepper class="text-left mb-3" buttons :steps="registrationStepper" :options="options" @submit="register">
 			<template #1 style="min-height:55vh;">
 				<p class="blue-grey lighten-5 h4  text-center mt-4 font-weight-bold">Personal Details</p>
@@ -52,7 +52,7 @@
 								</mdb-col>
 								<hr class="w-100" />
 								<mdb-col class="my-5 h5">
-									<mdb-input type="checkbox"  id="opentonomination" name="opentonomination" v-model="student.nominatable" label="I would like to run for office" />
+									<mdb-input type="checkbox" id="opentonomination" name="opentonomination" v-model="student.nominatable" label="I would like to run for office" />
 								</mdb-col>
 							</mdb-row>
 						</mdb-container>
@@ -63,7 +63,6 @@
 				<p class="blue-grey lighten-5 h4  text-center font-wesght-bold mt-4">Contact Details</p>
 				<div class="page">
 					<form>
-						<mdb-input outline label="email" icon="at" type="email" v-model="student.email" />
 						<mdb-input outline label="phone" icon="phone" type="number" v-model="student.phone" />
 					</form>
 				</div>
@@ -89,10 +88,6 @@
 							<mdb-col class="mdb-color-text font-weight-bold"> {{ student.email }}</mdb-col>
 						</mdb-row>
 						<mdb-row>
-							<mdb-col>Email <mdb-icon icon="at" /> </mdb-col>
-							<mdb-col class="mdb-color-text font-weight-bold"> {{ student.phone }}</mdb-col>
-						</mdb-row>
-						<mdb-row>
 							<mdb-col>Can Run For Office </mdb-col>
 							<mdb-col class="mdb-color-text  font-weight-bold" v-if="student.nominatable"> Yes <mdb-icon class="text-success" icon="check"/></mdb-col>
 							<mdb-col class="mdb-color-text  font-weight-bold" v-else>No <mdb-icon far class=" red-text" icon="times-circle"/></mdb-col>
@@ -106,7 +101,8 @@
 </template>
 
 <script>
-import axios from "axios"
+// import {API} from "@/client.js";
+import { auth, students } from "@/plugins/firebase.js";
 import { mdbStepper, mdbInput, mdbContainer, mdbSelect, mdbRow, mdbCol, mdbIcon, mdbNavbar, mdbNavbarNav, mdbNavbarToggler, mdbNavbarBrand, mdbNavItem } from "mdbvue";
 export default {
 	name: "register",
@@ -134,7 +130,6 @@ export default {
 				programme: "",
 				campus: "",
 				phone: "",
-				email: "",
 				password: "",
 				nominatable: false,
 			},
@@ -213,13 +208,27 @@ export default {
 		register() {
 			console.log("register");
 
-
-			// axios.post("192.168.1.108:5000/api/students",this.student )
-			axios.get("192.168.1.108:5000/api/election").then((res)=>{
-				console.log(res);
-			})
-			// axios.post("localhost:5000",JSON.stringify(this.student))
+			auth
+				.createUserWithEmailAndPassword(this.student.id + "@student.uniswa.sz", this.student.password)
+				.then((response) => {
+					return students.doc(`${this.student.id}`).set({
+						userId: response.user.uid,
+						name: this.student.name,
+						surname: this.student.surname,
+						phone: this.student.phone,
+						has_voted: false,
+						nominatable: this.student.nominatable,
+						campus: this.student.campus,
+						programme: this.student.programme,
+						id: this.student.id,
+					});
+				})
+				.then(() => {
+					this.$store.commit("ADD_USER", this.student);
+					this.$router.push({ name: "leaderboard" });
+				});
 		},
+
 		getSelectCourse(value, text) {
 			this.student.programme = value;
 			console.log("value : " + value);
