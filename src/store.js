@@ -21,8 +21,9 @@ export default new Vuex.Store({
 				auth
 					.signInWithEmailAndPassword(payload.email, payload.password)
 					.then((userObj) => {
+						console.log(userObj)
 						students
-							.where("uid", "==", userObj.uid)
+							.where("userId", "==", userObj.user.uid)
 							.get()
 							.then((querySnapshot) => {
 								querySnapshot.forEach((doc) => {
@@ -39,6 +40,9 @@ export default new Vuex.Store({
 					});
 			});
 		},
-		
+
 	},
+	getters:{
+
+	}
 });

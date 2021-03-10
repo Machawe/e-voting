@@ -27,7 +27,8 @@
 		<span else>
 			<mdb-row class="justify-content-center py-4 white">
 				<mdb-col col="11" md="4" lg="3">
-					<mdb-btn size="lg" outline="primary" block @click="$router.push({ name: 'polling' })" class="m-0 p-0" icon="vote-yea">Vote </mdb-btn>
+					<p v-if="student.has_voted" class="h4 green-text">You have Voted</p>
+					<mdb-btn size="lg" outline="primary" v-else block @click="$router.push({ name: 'polling' })" class="m-0 p-0" icon="vote-yea">Vote </mdb-btn>
 				</mdb-col>
 			</mdb-row>
 
@@ -38,14 +39,7 @@
 						<span class=" card hoverable pt-3">
 							<mdb-row>
 								<mdb-col col="12">
-									<mdb-avatar
-										tag="img"
-										v-if="nomenee.picture.length != 0"
-										:src="nomenee.picture"
-										circle
-										class="z-depth-1"
-										alt="Sample avatar"
-									/>
+									<mdb-avatar tag="img" v-if="nomenee.picture.length != 0" :src="nomenee.picture" circle class="z-depth-1" alt="Sample avatar" />
 									<mdb-icon size="5x" v-else icon="user-circle" />
 								</mdb-col>
 							</mdb-row>
@@ -69,7 +63,7 @@
 
 import { elections } from "@/plugins/firebase.js";
 // import {API} from "@/client.js";
-import { mdbNavbar, mdbNavbarNav,mdbSpinner, mdbNavItem, mdbBtn, mdbIcon, mdbRow, mdbCol, mdbContainer, mdbBadge, mdbAvatar } from "mdbvue";
+import { mdbNavbar, mdbNavbarNav, mdbSpinner, mdbNavItem, mdbBtn, mdbIcon, mdbRow, mdbCol, mdbContainer, mdbBadge, mdbAvatar } from "mdbvue";
 // import Navbar from "@/components/InappNevBar"
 export default {
 	name: "leaderboard",
@@ -236,6 +230,7 @@ export default {
 					},
 				],
 			},
+			student: {},
 		};
 	},
 	methods: {
@@ -250,13 +245,16 @@ export default {
 		},
 	},
 	mounted() {
+		this.loading = true;
 		elections
 			.doc("2020-2021")
 			.get()
 			.then((doc) => {
 				if (doc.exists) {
+					this.loading = false;
 					this.election = doc.data();
 					this.loading = false;
+					this.student = this.$store.state.user;
 				} else {
 					this.loading = false;
 					this.NotSetup = true;
@@ -264,28 +262,9 @@ export default {
 			})
 			.catch((error) => {
 				this.$notify.error({ message: error.message, position: "top right", timeOut: 5000 });
-
 				this.loading = false;
 				this.NotSetup = true;
 			});
-		// API.get('election').then((response)=>{
-		// 		this.election = response.data;
-		// })
-
-		// API.get('positions').then((response)=>{
-		// 		this.election.positions = response.data;
-		// })
-
-		// API.get('positions').then((response)=>{
-		// 		this.election.nomenees = response.data;
-		// })
-
-		// axios.get(`https://randomuser.me/api/?results=${this.election.nomenees.length}&inc=picture`).then((response) => {
-		// 	for (let i = 0; i < this.election.nomenees.length; i++) {
-		// 		console.log(response.data.results[i].picture.large);
-		// 		this.election.nomenees[i].picture = response.data.results[i].picture.large;
-		// 	}
-		// });
 	},
 };
 </script>
