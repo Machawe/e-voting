@@ -207,6 +207,7 @@ export default {
 	methods: {
 		register() {
 			console.log("register");
+			
 
 			auth
 				.createUserWithEmailAndPassword(this.student.id + "@student.uniswa.sz", this.student.password)
