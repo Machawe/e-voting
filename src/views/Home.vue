@@ -67,7 +67,11 @@
 				<mdb-input label="Enter password" type="password" icon="lock" v-model="password" class="pb-3 text-left"></mdb-input>
 				<p class="font-small red-text d-flex justify-content-end mb-2">Forgot <a class="ml-1"> Password?</a></p>
 				<div class="text-center mb-3">
-					<mdb-btn outline="primary" icon="key" size="md" @click="login()">Sign In</mdb-btn>
+					<mdb-btn color="primary" v-if="loading" disabled>
+						<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+						Loading...
+					</mdb-btn>
+					<mdb-btn outline="primary" v-else icon="key" size="md" @click="login()">Sign In</mdb-btn>
 				</div>
 			</mdb-modal-body>
 			<mdb-modal-footer class="mx-5 pt-3 mb-1" end>
@@ -123,6 +127,7 @@ export default {
 	},
 	data() {
 		return {
+			loading: false,
 			modal: false,
 			student_id: "",
 			password: "",
@@ -133,14 +138,25 @@ export default {
 		// 	signin: "store/signInAction",
 		// }),
 		login() {
+			this.loading = true;
 			if (this.student_id == "admin" && this.password == "admin") {
+				this.loading = false;
+				this.$notify.success({ message: `Welcome Administrator`, position: "top right", timeOut: 5000 });
+						
 				this.$router.push("/admin");
 			} else {
-				this.$store.dispatch('signInAction',{ email: this.student_id + "@student.uniswa.sz", password: this.password }).then(() => {
-					this.$router.push({ name: "leaderboard" });
-				}).catch((err)=>{
-						console.log(err)
-				})
+				this.$store
+					.dispatch("signInAction", { email: this.student_id + "@student.uniswa.sz", password: this.password })
+					.then((user) => {
+						console.log("user : "+user)
+						this.loading = false;
+						this.$notify.success({ message: `Welcome ${user.name} ${user.surname}`, position: "top right", timeOut: 5000 });						
+						this.$router.push({ name: "leaderboard" });
+					})
+					.catch((err) => {
+						this.loading = false;
+						console.log(err);
+					});
 			}
 		},
 	},
