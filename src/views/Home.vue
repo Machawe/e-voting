@@ -155,6 +155,7 @@ export default {
 					})
 					.catch((err) => {
 						this.loading = false;
+						this.$notify.error({ message: err.message, position: "top right", timeOut: 5000 });						
 						console.log(err);
 					});
 			}

@@ -210,6 +210,7 @@ export default {
 			let p = {
 				studentID,
 				position,
+				votes:0
 			};
 			console.log(index);
 			//this.positions[index].nomenees.push(p)

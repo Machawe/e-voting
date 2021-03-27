@@ -36,11 +36,12 @@ export default new Vuex.Store({
 							});
 					})
 					.catch((error) => {
-						commit("setError", error.message);
 						reject(error);
 					});
 			});
 		},
 	},
-	getters: {},
+	getters: {
+		
+	},
 });

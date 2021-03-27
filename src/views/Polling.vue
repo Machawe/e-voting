@@ -59,13 +59,17 @@
 		</div>
 		<mdb-row class="mb-5 py-3 white border-top justify-content-center">
 			<mdb-col sm="9" lg="6">
-				<mdb-btn outline="primary" rounded block @click="submit" color="white" icon="vote-yea">SUBMIT </mdb-btn>
+				<mdb-btn color="primary" v-if="loading" disabled>
+						<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+						Loading...
+					</mdb-btn>
+				<mdb-btn outline="primary" v-else rounded block @click="submit" color="white" icon="vote-yea">SUBMIT </mdb-btn>
 			</mdb-col>
 		</mdb-row>
 	</mdb-container>
 </template>
 <script>
-import { elections } from "@/plugins/firebase.js";
+import { elections, students } from "@/plugins/firebase.js";
 import { mdbNavbar, mdbNavbarNav, mdbAvatar, mdbNavItem, mdbBtn, mdbIcon, mdbRow, mdbCol, mdbContainer, mdbBadge, mdbInput } from "mdbvue";
 // import Navbar from "@/components/InappNevBar"
 export default {
@@ -235,7 +239,7 @@ export default {
 					},
 				],
 			},
-			student:{},
+			student: {},
 			vote: [],
 		};
 	},
@@ -249,24 +253,56 @@ export default {
 				}
 			});
 		},
-		poll(studentID, index) {
-			this.vote[index] = studentID;
+		poll(studentID, index1) {
+			this.vote[index1] = studentID;
+			// this.election.nomenees[index2].votes++;
 		},
 		joinVote() {
 			let V = [];
 			for (let i = 0; i < this.election.positions.length; i++) {
 				console.log("position : " + this.election.positions[i].position);
 				console.log("vote :" + this.vote[i]);
-
-				let v = { nomeneeID: this.vote[i], position: this.election.positions[i] };
-				V.push(v);
+				V.push({ nomeneeID: this.vote[i], position: this.election.positions[i] });
 			}
+			this.vote.forEach((v) => {
+				this.election.nomenees.forEach((nomenee) => {
+					if (nomenee.studentID == v) {
+						nomenee.votes++;
+					}
+				});
+			});
 
 			return V;
 		},
 		submit() {
+			this.loading = true;
 			let Vote = this.joinVote();
 			this.vote = [];
+			elections
+				.doc("2020-2021")
+				.set({
+					nomenees: this.election.nomenees,
+				})
+				.then(() => {
+					students
+						.doc(this.$store.state.user.userId)
+						.set({
+							has_voted: true,
+						})
+						.then(() => {
+							this.loading = false;
+							this.loading = false;
+							this.$router.push({ name: "leaderboard" });
+						})
+						.catch((err) => {
+							this.loading = false;
+							console.log(err);
+						});
+				})
+				.catch((err) => {
+					this.loading = false;
+					console.log(err);
+				});
 			console.log(Vote);
 		},
 	},
@@ -281,11 +317,11 @@ export default {
 				} else {
 					this.loading = false;
 					this.Voted = true;
+					this.$notify.error({ message: "You can only vote once", position: "top right", timeOut: 5000 });
 				}
 			})
 			.catch((error) => {
 				this.$notify.error({ message: error.message, position: "top right", timeOut: 5000 });
-
 				this.loading = false;
 				this.Voted = true;
 			});
