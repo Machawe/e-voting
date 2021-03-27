@@ -60,16 +60,16 @@
 		<mdb-row class="mb-5 py-3 white border-top justify-content-center">
 			<mdb-col sm="9" lg="6">
 				<mdb-btn color="primary" v-if="loading" disabled>
-						<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
-						Loading...
-					</mdb-btn>
+					<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+					Loading...
+				</mdb-btn>
 				<mdb-btn outline="primary" v-else rounded block @click="submit" color="white" icon="vote-yea">SUBMIT </mdb-btn>
 			</mdb-col>
 		</mdb-row>
 	</mdb-container>
 </template>
 <script>
-import { elections, students } from "@/plugins/firebase.js";
+import { elections, students, auth } from "@/plugins/firebase.js";
 import { mdbNavbar, mdbNavbarNav, mdbAvatar, mdbNavItem, mdbBtn, mdbIcon, mdbRow, mdbCol, mdbContainer, mdbBadge, mdbInput } from "mdbvue";
 // import Navbar from "@/components/InappNevBar"
 export default {
@@ -280,19 +280,24 @@ export default {
 			this.vote = [];
 			elections
 				.doc("2020-2021")
-				.set({
-					nomenees: this.election.nomenees,
-				})
+				.update(this.election)
 				.then(() => {
 					students
-						.doc(this.$store.state.user.userId)
+						.doc(this.$store.state.user.id)
 						.set({
 							has_voted: true,
 						})
 						.then(() => {
 							this.loading = false;
 							this.loading = false;
-							this.$router.push({ name: "leaderboard" });
+
+							auth.signOut().then(() => {
+								// Sign-out successful.
+								this.$notify.success({ message: "You have voted successfullly", position: "top right", timeOut: 5000 });
+								this.$router.push({ name: "home" });
+							});
+								this.$notify.success({ message: "You have voted successfullly", position: "top right", timeOut: 5000 });
+								this.$router.push({ name: "home" });
 						})
 						.catch((err) => {
 							this.loading = false;

@@ -3,7 +3,7 @@
 		<mdb-navbar color="stylish" position="top" animation="5" dark>
 			<mdb-navbar-nav>
 				<mdb-nav-item href="#">
-					<mdb-btn size="md" outline="white" @click="$router.go(-1)" class="m-0 p-0" icon="arrow-left" />
+					<mdb-btn size="md" outline="white" @click="logout" class="m-0 p-0" icon="arrow-left" />
 				</mdb-nav-item>
 			</mdb-navbar-nav>
 			<mdb-navbar-nav right>
@@ -14,8 +14,10 @@
 		</mdb-navbar>
 		<h1 class="mt-5"><mdb-icon icon="poll" /> Leaderboard</h1>
 		<!-- <mdb-icon  /> -->
-		<span v-if="loading" class=" d-flex justify-content-center   mx-0 px-0 p-0 m-0" style="height:80vh;width:100%">
-			<mdb-spinner class="align-middle align-self-center" big crazy />
+		<span v-if="loading">
+			<span class=" d-flex justify-content-center   mx-0 px-0 p-0 m-0" style="height:80vh;width:100%">
+				<mdb-spinner class="align-middle align-self-center" big crazy />
+			</span>
 		</span>
 		<span v-else-if="NotSetup" class="d-flex justify-content-center" style="height:80vh;width:100%">
 			<span class="align-middle align-self-center">
@@ -61,7 +63,7 @@
 <script>
 // import axios from "axios";
 
-import { elections } from "@/plugins/firebase.js";
+import { elections, auth } from "@/plugins/firebase.js";
 // import {API} from "@/client.js";
 import { mdbNavbar, mdbNavbarNav, mdbSpinner, mdbNavItem, mdbBtn, mdbIcon, mdbRow, mdbCol, mdbContainer, mdbBadge, mdbAvatar } from "mdbvue";
 // import Navbar from "@/components/InappNevBar"
@@ -242,6 +244,22 @@ export default {
 					return false;
 				}
 			});
+		},
+		logout() {
+			auth
+				.signOut()
+				.then(()=>{
+					this.$router.push("/");
+					// Sign-out successful.
+				})
+				.catch((error)=> {
+					this.$notify.error({
+						message: error,
+						position: "top right",
+						timeOut: 5000,
+					});
+					// An error happened.
+				});
 		},
 	},
 	mounted() {

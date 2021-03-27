@@ -1,16 +1,16 @@
 <template>
 	<div class="classic-form-page">
-		<mdb-navbar color="mdb-color" position="top" animation="5" dark>
+		<mdb-navbar color="mdb-color" position="top" animation="0" dark>
 			<mdb-container fluid>
 				<mdbNavbarBrand href="#/"> <img src="@/assets/l.png" class="my-0 py-0" height="40" alt=""/></mdbNavbarBrand>
-				<mdb-navbar-toggler>
+				<!-- <mdb-navbar-toggler> -->
 					<mdb-navbar-nav right>
 						<mdb-form-inline
 							><mdb-btn outline="white" size="sm" class="my-0" @click.native="modal = true" type="submit">Login</mdb-btn>
 							<mdb-btn outline="white" size="sm" class="my-0" @click="$router.push({ name: 'register' })" type="submit">Register</mdb-btn>
 						</mdb-form-inline>
 					</mdb-navbar-nav>
-				</mdb-navbar-toggler>
+				<!-- </mdb-navbar-toggler> -->
 			</mdb-container>
 		</mdb-navbar>
 
@@ -89,7 +89,7 @@ import {
 	mdbCol,
 	mdbNavbar,
 	mdbNavbarNav,
-	mdbNavbarToggler,
+	// mdbNavbarToggler,
 	ViewWrapper,
 	mdbMask,
 	mdbBtn,
@@ -113,7 +113,7 @@ export default {
 		mdbNavbar,
 		mdbNavbarNav,
 		mdbFormInline,
-		mdbNavbarToggler,
+		// mdbNavbarToggler,
 		ViewWrapper,
 		mdbMask,
 		mdbBtn,
