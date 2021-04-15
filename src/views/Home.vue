@@ -150,8 +150,8 @@ export default {
 					.then((user) => {
 						console.log("user : "+user)
 						this.loading = false;
-						this.$notify.success({ message: `Welcome ${user.name} ${user.surname}`, position: "top right", timeOut: 5000 });						
 						this.$router.push({ name: "leaderboard" });
+						this.$notify.success({ message: `Welcome ${user.name} ${user.surname}`, position: "top right", timeOut: 5000 });						
 					})
 					.catch((err) => {
 						this.loading = false;

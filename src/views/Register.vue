@@ -85,7 +85,7 @@
 						</mdb-row>
 						<mdb-row>
 							<mdb-col>Phone Number <mdb-icon icon="phone"/></mdb-col>
-							<mdb-col class="mdb-color-text font-weight-bold"> {{ student.email }}</mdb-col>
+							<mdb-col class="mdb-color-text font-weight-bold"> {{ student.phone }}</mdb-col>
 						</mdb-row>
 						<mdb-row>
 							<mdb-col>Can Run For Office </mdb-col>
@@ -207,7 +207,9 @@ export default {
 	methods: {
 		register() {
 			console.log("register");
-			
+			if (this.student.id.leangth == 0) {
+				this.$notify.error({ messege: " Please check student ID" });
+			}
 
 			auth
 				.createUserWithEmailAndPassword(this.student.id + "@student.uniswa.sz", this.student.password)
@@ -227,6 +229,10 @@ export default {
 				.then(() => {
 					this.$store.commit("ADD_USER", this.student);
 					this.$router.push({ name: "leaderboard" });
+					this.$notify.success({ message:"Registration Succesfull", position: "top right", timeOut: 5000 });
+				})
+				.catch((error) => {
+					this.$notify.error({ message:error, position: "top right", timeOut: 5000 });
 				});
 		},
 

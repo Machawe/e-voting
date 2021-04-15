@@ -63,7 +63,7 @@
 <script>
 // import axios from "axios";
 
-import { elections, auth } from "@/plugins/firebase.js";
+import { elections, auth ,students} from "@/plugins/firebase.js";
 // import {API} from "@/client.js";
 import { mdbNavbar, mdbNavbarNav, mdbSpinner, mdbNavItem, mdbBtn, mdbIcon, mdbRow, mdbCol, mdbContainer, mdbBadge, mdbAvatar } from "mdbvue";
 // import Navbar from "@/components/InappNevBar"
@@ -232,7 +232,7 @@ export default {
 					},
 				],
 			},
-			student: {},
+			// student: this.$store.state.user,
 		};
 	},
 	methods: {
@@ -262,27 +262,41 @@ export default {
 				});
 		},
 	},
-	mounted() {
+	created() {
 		this.loading = true;
+		// this.student = this.$store.state.user;
 		elections
 			.doc("2020-2021")
 			.get()
 			.then((doc) => {
+				console.log("election found")
+				console.log(doc.data())
+				// this.$notify.error({ message: error.message, position: "top right", timeOut: 5000 });
 				if (doc.exists) {
 					this.loading = false;
 					this.election = doc.data();
 					this.loading = false;
-					this.student = this.$store.state.user;
 				} else {
 					this.loading = false;
 					this.NotSetup = true;
 				}
 			})
 			.catch((error) => {
+				console.log("election not found")
 				this.$notify.error({ message: error.message, position: "top right", timeOut: 5000 });
 				this.loading = false;
 				this.NotSetup = true;
 			});
+
+
+			students.doc(this.$store.state.user.id).get().then(doc=>{
+			this.$store.dispatch('updateUser', doc.data());
+			})
 	},
+	computed:{
+		student(){
+			return this.$store.state.user;
+		}
+	}
 };
 </script>

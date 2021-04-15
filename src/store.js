@@ -22,6 +22,7 @@ export default new Vuex.Store({
 					.signInWithEmailAndPassword(payload.email, payload.password)
 					.then((userObj) => {
 						console.log(userObj);
+						// resolve(userObj);
 						// var u;
 						students
 							.where("userId", "==", userObj.user.uid)
@@ -30,16 +31,20 @@ export default new Vuex.Store({
 								querySnapshot.forEach((doc) => {
 									commit("ADD_USER", doc.data());
 									// u = doc.data();
+									console.log("this is working");
 									console.log(doc.id, " => ", doc.data());
 									resolve(doc.data());
 								});
 							});
-					})
-					.catch((error) => {
-						reject(error);
+						})
+						.catch((error) => {
+							reject(error);
+						});
 					});
-			});
-		},
+				},
+				updateUser({commit},payload){
+					commit("ADD_USER", payload);
+				}
 	},
 	getters: {
 		

@@ -42,7 +42,7 @@
 					<mdb-card class="mt-4">
 						<h3 class="card-header stylish-color white-text text-center font-weight-bold text-uppercase py-4">UNESWA SRC Positions</h3>
 						<mdb-card-body>
-							<mdb-table-editable :columns="columns" :rows="positions" class="text-center" striped bordered responsive pagination :display="5" :entries="5" />
+							<mdb-table-editable :columns="columns" :rows="positions" class="text-center" striped bordered responsive pagination :display="5" :entries="10" />
 						</mdb-card-body>
 					</mdb-card>
 				</mdb-container>
@@ -143,7 +143,7 @@ export default {
 				},
 			],
 			positions: [
-				{
+			{
 					position: "President",
 					campus: "All",
 				},
@@ -152,12 +152,40 @@ export default {
 					campus: "All",
 				},
 				{
-					position: "Direcor of Canteen",
+					position: "Director of Canteen (Kwaliseni)",
 					campus: "Kwaluseni",
 				},
 				{
-					position: "Direcor of Health",
+					position: "Director of Canteen (Mbabane)",
 					campus: "Mbabane",
+				},
+				{
+					position: "Director of Canteen (Luyengo)",
+					campus: "Luyengo",
+				},
+				{
+					position: "Director of Health (Kwaliseni)",
+					campus: "Kwaluseni",
+				},
+				{
+					position: "Director of Health (Mbabane)",
+					campus: "Mbabane",
+				},
+				{
+					position: "Director of Health (Luyengo)",
+					campus: "Luyengo",
+				},
+				{
+					position: "Internal Affairs(Kwaliseni)",
+					campus: "Kwaliseni",
+				},
+				{
+					position: "Internal Affairs (Mbabane)",
+					campus: "Mbabane",
+				},
+				{
+					position: "Internal Affairs (Luyengo)",
+					campus: "Luyengo",
 				},
 			],
 			nomination: [
@@ -193,7 +221,7 @@ export default {
 					.then(() => {
 						this.$notify.success({ message: `Election for the ${this.acardemic_year} academic year Ready`, position: "top right", timeOut: 5000 });
 						this.loading =false;
-						this.$router.push({ name: "leaderboard" });
+						this.$router.push({ name: "home" });
 					})
 					.catch((err) => {
 						console.log(err);

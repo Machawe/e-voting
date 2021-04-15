@@ -280,19 +280,19 @@ export default {
 			this.vote = [];
 			elections
 				.doc("2020-2021")
-				.update(this.election)
+				.update({nomenees:this.election.nomenees})
 				.then(() => {
 					students
 						.doc(this.$store.state.user.id)
-						.set({
+						.update({
 							has_voted: true,
 						})
 						.then(() => {
 							this.loading = false;
-							this.loading = false;
+
 
 							auth.signOut().then(() => {
-								// Sign-out successful.
+								
 								this.$notify.success({ message: "You have voted successfullly", position: "top right", timeOut: 5000 });
 								this.$router.push({ name: "home" });
 							});
